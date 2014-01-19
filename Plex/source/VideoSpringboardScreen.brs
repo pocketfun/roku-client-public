@@ -34,44 +34,60 @@ End Function
 Sub videoSetupButtons()
     m.ClearButtons()
 
-    m.AddButton(m.PlayButtonStates[m.PlayButtonState].label, "play")
+    canPlay = true
+    rating = m.metadata.contentRating
+    Debug("Showing with rating " + rating)
+    if rating = "12A" OR rating = "PG-13" OR rating = "12"  OR rating = "15" OR rating = "18" OR rating = "R" OR rating = "R18" OR rating = "NC17" then
+        Debug("Parental control stopped item with rating " + rating)
+        canPlay = false
+    end if
+    
+    if canPlay = false then
+        m.AddButton("Sorry Iain you are too young", "iain")
+    end if
+
+    if canPlay then
+        m.AddButton(m.PlayButtonStates[m.PlayButtonState].label, "play")
+    end if
     Debug("Media = " + tostr(m.media))
     Debug("Can direct play = " + tostr(videoCanDirectPlay(m.media)))
 
-    supportedIdentifier = (m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.library" OR m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.myplex")
-    if supportedIdentifier then
-        if m.metadata.viewCount <> invalid AND val(m.metadata.viewCount) > 0 then
-            m.AddButton("Mark as unwatched", "unscrobble")
-        else
-            if m.metadata.viewOffset <> invalid AND val(m.metadata.viewOffset) > 0 then
+    if canPlay then
+        supportedIdentifier = (m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.library" OR m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.myplex")
+        if supportedIdentifier then
+            if m.metadata.viewCount <> invalid AND val(m.metadata.viewCount) > 0 then
                 m.AddButton("Mark as unwatched", "unscrobble")
+            else
+                if m.metadata.viewOffset <> invalid AND val(m.metadata.viewOffset) > 0 then
+                    m.AddButton("Mark as unwatched", "unscrobble")
+                end if
+                m.AddButton("Mark as watched", "scrobble")
             end if
-            m.AddButton("Mark as watched", "scrobble")
         end if
-    end if
-
-    if m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.myplex" AND m.metadata.id <> invalid then
-        m.AddButton("Delete from queue", "delete")
-    end if
-
-    m.AddButton("Playback options", "options")
-
-    if supportedIdentifier then
-        if m.metadata.UserRating = invalid then
-            m.metadata.UserRating = 0
-        endif
-        if m.metadata.StarRating = invalid then
-            m.metadata.StarRating = 0
-        endif
-
-        ' When delete is present we don't have enough room so we stuff delete
-        ' and rate in a separate dialog.
-        ' RR - when grandparentKey is present - we don't have enough room
-        ' either. We present 'Show All Seasons' and 'Show Season #'
-        if m.metadata.server.AllowsMediaDeletion OR m.metadata.grandparentKey <> invalid then
-            m.AddButton("More...", "more")
-        else
-            m.AddRatingButton(m.metadata.UserRating, m.metadata.StarRating, "rateVideo")
+    
+        if m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.myplex" AND m.metadata.id <> invalid then
+            m.AddButton("Delete from queue", "delete")
+        end if
+    
+        m.AddButton("Playback options", "options")
+    
+        if supportedIdentifier then
+            if m.metadata.UserRating = invalid then
+                m.metadata.UserRating = 0
+            endif
+            if m.metadata.StarRating = invalid then
+                m.metadata.StarRating = 0
+            endif
+    
+            ' When delete is present we don't have enough room so we stuff delete
+            ' and rate in a separate dialog.
+            ' RR - when grandparentKey is present - we don't have enough room
+            ' either. We present 'Show All Seasons' and 'Show Season #'
+            if m.metadata.server.AllowsMediaDeletion OR m.metadata.grandparentKey <> invalid then
+                m.AddButton("More...", "more")
+            else
+                m.AddRatingButton(m.metadata.UserRating, m.metadata.StarRating, "rateVideo")
+            end if
         end if
     end if
 End Sub

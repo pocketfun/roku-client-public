@@ -32,6 +32,8 @@ Function newVideoMetadata(container, item, detailed=false) As Object
     video.isLibraryContent = (video.mediaContainerIdentifier = "com.plexapp.plugins.library")
 
     video.ReleaseDate = item@originallyAvailableAt
+    
+    video.contentRating = item@contentRating
 
     length = item@duration
     if length <> invalid then
@@ -258,7 +260,7 @@ Function parseMediaContainer(MediaItem)
 
     if MediaItem@protocol = "hls" then
         container = "hls"
-    elseif MediaItem@protocol = "rtmp" then
+    else if MediaItem@protocol = "rtmp" then
         container = "rtmp"
     else if MediaItem@protocol = "webkit" then
         container = "webkit"
