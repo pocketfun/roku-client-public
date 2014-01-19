@@ -4,6 +4,15 @@ The official Plex client for the Roku. This client is maintained by a
 combination of Plex developers and community volunteers. We *love* contributors,
 so please don't be shy to fork and hack away.
 
+## Parental Filtering
+
+Movies are filtered such that certain ratings are not able to be played. They
+still appear in lists, but the play etc. controls are disabled. Currently the
+following ratings are prevented:
+
+12A, PG-13, 12, 15, 18, R, R18, NC17
+
+
 ## Installation
 
 If you're just trying to install the channel normally, you don't need to be
